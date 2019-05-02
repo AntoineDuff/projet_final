@@ -65,6 +65,24 @@ class NeuralNet:
 
 		self.layers_weights = np.array(self.layers_weights)
 
+	def accuracy(self, pred_label, true_label):
+		Y = [pred_label[j] for j in range(len(pred_label)) if pred_label[j]==true_label[j] ]
+		score = len(Y)/len(pred_label)
+		
+		return score
+
+	def confusion_matrix(self, pred_label, true_label):
+		labels = np.unique(true_label, return_counts=True)
+
+        #build the confusion matrix
+        #row = prediction col=actual class
+		confusion_mat = np.zeros((len(labels[0]), len(labels[0])))
+		
+		for pred_y, true_y in zip(pred_label, true_label):
+			confusion_mat[pred_y][true_y] += 1
+		
+		return confusion_mat
+
 	def train(self, train, train_labels, epochs=1000, show_graph=False):
 		"""
 		c'est la méthode qui va entrainer votre modèle,
@@ -107,7 +125,7 @@ class NeuralNet:
 
 		return np.argmax(preds_h)
 
-	def test(self, test, test_labels):
+	def test(self, test, test_labels, muted=True):
 		"""
 		c'est la méthode qui va tester votre modèle sur les données de test
 		l'argument test est une matrice de taille nxm, avec 
@@ -137,6 +155,11 @@ class NeuralNet:
 		correct_preds_count = np.count_nonzero(is_equal)
 		score = correct_preds_count / len(test_labels)
 
+		if muted == False:
+			confusion_matrix = self.confusion_matrix(preds, test_labels)
+			print("Accuracy: ", score, '\n')
+			print("Confusion Matrix:\n", confusion_matrix, '\n')
+				
 		return score
 
 	def _forward(self, x):
