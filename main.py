@@ -36,9 +36,9 @@ class K_folds:
         return train_ind_list, test_ind_list
 
 if __name__ == "__main__":
-    # train, train_labels, test, test_labels = load_iris_dataset(0.7)
+    train, train_labels, test, test_labels = load_iris_dataset(0.7)
     # train, train_labels, test, test_labels = load_congressional_dataset(0.7)
-    train, train_labels, test, test_labels = load_monks_dataset(3)
+    # train, train_labels, test, test_labels = load_monks_dataset(3)
 
     "Decision tree learning curve with cross-validation"
     # All considered training dataset sizes
@@ -122,45 +122,117 @@ if __name__ == "__main__":
     # print(avg_scores)
 
     " Cross-validation for best number of hidden layers."
-    kf = K_folds(n_splits=5)
-    train_kf, train_label_kf = kf.split(train, train_labels)
-    train_sizes = list(range(10, len(train[:,1]), 10))
-    n_hidden_layers = list(range(3, 8))
+    # train_sizes = list(range(10, len(train[:,1]), 10))
+    # n_hidden_layers = list(range(3, 8))
 
     # n_neurons = 6 # Iris
     # n_neurons = 17 # Congress
     # n_neurons = 20 # MONKS-1
     # n_neurons = 24 # MONKS-2
-    n_neurons = 40 # MONKS-3
+    # n_neurons = 40 # MONKS-3
+
+    # all_avg_scores = list()
+    # for n in n_hidden_layers:
+    #     avg_scores = list()
+    #     for size in train_sizes: # For every training dataset sizes, do cross-validation
+    #         N_net = NeuralNet.NeuralNet(parameters_nb=np.size(train,1),
+    #                                 classes_nb=np.size(np.unique(train_labels)),
+    #                                 hidden_layer_nb=n,
+    #                                 neurone_nb=n_neurons,
+    #                                 learning_rate=0.1)
+    #         kf = K_folds(n_splits=5) 
+    #         train_kf, train_label_kf = kf.split(train[:size], train_labels[:size])
+    #         avg_score = 0
+    #         for train_inds, test_inds in zip (train_kf, train_label_kf):
+    #             X_train = train[train_inds]
+    #             y_train = train_labels[train_inds]
+    #             X_test = train[test_inds]
+    #             y_test = train_labels[test_inds]
+
+    #             N_net.train(X_train, y_train, epochs=500)
+    #             avg_score += N_net.test(X_test, y_test)
+      
+    #         avg_score = avg_score / kf.n_splits
+    #         avg_scores.append(avg_score)
+
+    #     all_avg_scores.append(avg_scores)
+
+    # for _, scores in enumerate(all_avg_scores):
+    #     plt.plot(train_sizes, scores)
+    # plt.gca().legend(('RN-3C', 'RN-4C', 'RN-5C', 'RN-6C', 'RN-7C'))
+    # plt.xlabel("Taille de l'échantillon d'entraînement")
+    # plt.ylabel('Proportion correctement prédite sur le test')
+    # plt.show()
+
+    " Test initialize weights to zero or random between -0.05-0.05."
+    n_neurons = 6 # Iris
+    n_hidden_layers = 1 # Iris
+    # n_neurons = 17 # Congress
+    # n_hidden_layers = 1 # Congress
+    # n_neurons = 20 # MONKS-1
+    # n_hidden_layers = 1 # MONKS-1
+    # n_neurons = 24 # MONKS-2
+    # n_hidden_layers = 1 # MONKS-2
+    # n_neurons = 40 # MONKS-3
+    # n_hidden_layers = 1 # MONKS-3
 
     all_avg_scores = list()
-    for n in n_hidden_layers:
-        avg_scores = list()
-        for size in train_sizes: # For every training dataset sizes, do cross-validation
-            N_net = NeuralNet.NeuralNet(parameters_nb=np.size(train,1),
-                                    classes_nb=np.size(np.unique(train_labels)),
-                                    hidden_layer_nb=n,
-                                    neurone_nb=n_neurons,
-                                    learning_rate=0.1)
-            avg_score = 0
-            for train_inds, test_inds in zip (train_kf, train_label_kf):
-                X_train = train[train_inds]
-                y_train = train_labels[train_inds]
-                X_test = train[test_inds]
-                y_test = train_labels[test_inds]
 
-                N_net.train(X_train, y_train, epochs=500)
-                avg_score += N_net.test(X_test, y_test)
+    # Non-zero weights
+    avg_scores = list()
+    train_sizes = list(range(10, len(train[:,1]), 10))
+    for size in train_sizes: # For every training dataset sizes, do cross-validation
+        N_net = NeuralNet.NeuralNet(parameters_nb=np.size(train,1),
+                                classes_nb=np.size(np.unique(train_labels)),
+                                hidden_layer_nb=n_hidden_layers,
+                                neurone_nb=n_neurons,
+                                learning_rate=0.1)
+        kf = K_folds(n_splits=5) 
+        train_kf, train_label_kf = kf.split(train[:size], train_labels[:size])
+        avg_score = 0
+        
+        for train_inds, test_inds in zip (train_kf, train_label_kf):
+            X_train = train[train_inds]
+            y_train = train_labels[train_inds]
+            X_test = train[test_inds]
+            y_test = train_labels[test_inds]
+
+            N_net.train(X_train, y_train, epochs=500)
+            avg_score += N_net.test(X_test, y_test)
       
-            avg_score = avg_score / kf.n_splits
-            avg_scores.append(avg_score)
+        avg_score = avg_score / kf.n_splits
+        avg_scores.append(avg_score)
 
-        all_avg_scores.append(avg_scores)
+    all_avg_scores.append(avg_scores)
+
+    # Zero weights
+    avg_scores = list()
+    for size in train_sizes:
+        N_net = NeuralNet.NeuralNet(parameters_nb=np.size(train,1),
+                                classes_nb=np.size(np.unique(train_labels)),
+                                hidden_layer_nb=n_hidden_layers,
+                                neurone_nb=n_neurons,
+                                learning_rate=0.1, zero_weights=True)
+        kf = K_folds(n_splits=5) 
+        train_kf, train_label_kf = kf.split(train[:size], train_labels[:size])
+        avg_score = 0
+        for train_inds, test_inds in zip (train_kf, train_label_kf):
+            X_train = train[train_inds]
+            y_train = train_labels[train_inds]
+            X_test = train[test_inds]
+            y_test = train_labels[test_inds]
+
+            N_net.train(X_train, y_train, epochs=500)
+            avg_score += N_net.test(X_test, y_test)
+      
+        avg_score = avg_score / kf.n_splits
+        avg_scores.append(avg_score)
+
+    all_avg_scores.append(avg_scores)
 
     for _, scores in enumerate(all_avg_scores):
         plt.plot(train_sizes, scores)
-    plt.gca().legend(('RN-3C', 'RN-4C', 'RN-5C', 'RN-6C', 'RN-7C'))
-    # plt.gca().legend(('3 layers', '4 layers'))
+    plt.gca().legend(('RN-NON-ZERO', 'RN-ZERO'))
     plt.xlabel("Taille de l'échantillon d'entraînement")
     plt.ylabel('Proportion correctement prédite sur le test')
     plt.show()

@@ -20,7 +20,8 @@ def scale_mat(mat, a, b):
 
 class NeuralNet:
 
-	def __init__(self, parameters_nb, classes_nb, hidden_layer_nb, neurone_nb, learning_rate=0.01):
+	def __init__(self, parameters_nb, classes_nb, hidden_layer_nb, neurone_nb, learning_rate=0.01,
+				zero_weights=False):
 		"""
 		c'est un Initializer. 
 		Vous pouvez passer d'autre paramètres au besoin,
@@ -36,25 +37,33 @@ class NeuralNet:
 		#initialize weights
 		for i in range(hidden_layer_nb + 1):
 			if i == 0:
-				weights = np.random.rand(parameters_nb, neurone_nb)
-				result = scale_mat(weights, -0.05, 0.05)
+				if zero_weights == True:
+					result = np.zeros((parameters_nb, neurone_nb))
+				else:
+					weights = np.random.rand(parameters_nb, neurone_nb)
+					result = scale_mat(weights, -0.05, 0.05)
 				self.layers_weights.append(result)
 				self.bias.append(np.ones(neurone_nb))
 
 			elif i == hidden_layer_nb:
-				weights = np.random.rand(neurone_nb, classes_nb)
-				result = scale_mat(weights, -0.05, 0.05)
+				if zero_weights == True:
+					result = np.zeros((neurone_nb, classes_nb))
+				else:
+					weights = np.random.rand(neurone_nb, classes_nb)
+					result = scale_mat(weights, -0.05, 0.05)
 				self.layers_weights.append(result)
 				self.bias.append(np.ones(classes_nb))
 				
 			else:
-				weights = np.random.rand(neurone_nb, neurone_nb)
-				result = scale_mat(weights, -0.05, 0.05)
+				if zero_weights == True:
+					result = np.zeros((neurone_nb, neurone_nb))
+				else:
+					weights = np.random.rand(neurone_nb, neurone_nb)
+					result = scale_mat(weights, -0.05, 0.05)
 				self.layers_weights.append(result)
 				self.bias.append(np.ones(neurone_nb))
 
 		self.layers_weights = np.array(self.layers_weights)
-
 
 	def train(self, train, train_labels, epochs=1000, show_graph=False):
 		"""
