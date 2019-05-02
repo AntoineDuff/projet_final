@@ -1,4 +1,4 @@
-# Implementation of Knn and Naive Bayes classfiers
+# Implementation of DecisionTree and NeuralNet
 # Classe DecisionTree:
 DecisionTree est une classe implémentant un modèle de classement suivant l'algorithme d'arbre de décision
 - Le contructeur __init__() par défaut est utilisé pour cette classe sans arguments.
