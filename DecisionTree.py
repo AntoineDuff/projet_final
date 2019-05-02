@@ -10,6 +10,23 @@ class DecisionTree:
 		"""
 		Init
 		"""
+	def accuracy(self, pred_label, true_label):
+		Y = [pred_label[j] for j in range(len(pred_label)) if pred_label[j]==true_label[j] ]
+		score = len(Y)/len(pred_label)
+		
+		return score
+
+	def confusion_matrix(self, pred_label, true_label):
+		labels = np.unique(true_label, return_counts=True)
+
+        #build the confusion matrix
+        #row = prediction col=actual class
+		confusion_mat = np.zeros((len(labels[0]), len(labels[0])))
+		
+		for pred_y, true_y in zip(pred_label, true_label):
+			confusion_mat[pred_y][true_y] += 1
+		
+		return confusion_mat
 
 	def _plurality_value(self, examples):
 		classes, classes_item_count = np.unique(examples, return_counts=True)
@@ -167,7 +184,7 @@ class DecisionTree:
 
 		return pred_class
 					
-	def test(self, test, test_labels):
+	def test(self, test, test_labels, muted=True):
 		"""
 		c'est la méthode qui va tester votre modèle sur les données de test
 		l'argument test est une matrice de taille nxm, avec 
@@ -195,8 +212,18 @@ class DecisionTree:
 		matching_preds = np.zeros_like(preds, dtype=bool)
 		matching_preds[preds == test_labels] = True
 		_, bad_good_preds  = np.unique(matching_preds, return_counts=True)
+		
+		if len(bad_good_preds) == 1 and matching_preds[0] == True:
+			score = 1
+		elif len(bad_good_preds) == 1 and matching_preds[0] == False:
+			score = 0
+		else:
+			score = bad_good_preds[1] / len(matching_preds)
 
-		score = bad_good_preds[1] / len(matching_preds)
+		if muted == False:
+			confusion_matrix = self.confusion_matrix(preds, test_labels)
+			print("Accuracy: ", score, '\n')
+			print("Confusion Matrix:\n", confusion_matrix, '\n')
 
 		return score
 	

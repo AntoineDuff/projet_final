@@ -56,7 +56,7 @@ class NeuralNet:
 		self.layers_weights = np.array(self.layers_weights)
 
 
-	def train(self, train, train_labels, epochs=1000):
+	def train(self, train, train_labels, epochs=1000, show_graph=False):
 		"""
 		c'est la méthode qui va entrainer votre modèle,
 		train est une matrice de taille nxm, avec 
@@ -81,9 +81,9 @@ class NeuralNet:
 
 			score = self.test(train, train_labels)
 			scores.append(score)
-
-		plt.plot(np.arange(epochs), scores)
-		plt.show()
+		if show_graph == True:
+			plt.plot(np.arange(epochs), scores)
+			plt.show()
 
 	def predict(self, exemple, label):
 		"""
