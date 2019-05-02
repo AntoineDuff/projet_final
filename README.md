@@ -23,4 +23,4 @@ La classe K_folds implémente la méthode de génération de données en k-plis 
 - split() prend en arguement les données à diviser ainsi que leur étiquette. Cette méthode retourne une liste de listes des indices des données et des étiquettes à utiliser dans le jeu de donnée initiale pour chacun des plis.
 
 # Division du travail
-L'ensemble de l'implémentation des classes à été réalisé par les deux membres de l'équipe Louis-Gabriel Maltais et Antoine Dufour. Aucune difficulté particulière à été rencontrée lors de l'implémentation du code.
+L'ensemble de l'implémentation des classes à été réalisée par les deux membres de l'équipe Louis-Gabriel Maltais et Antoine Dufour. Aucune difficulté particulière n'a été rencontrée lors de l'implémentation du code.
